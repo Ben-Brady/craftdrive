@@ -1,0 +1,24 @@
+local SERVER = "http://localhost:8080"
+local ID = 1
+
+---@return table{foo: integer}
+function getTasks()
+    local url = SERVER .. "/tasks/" .. tostring(ID)
+    local data = http.get(url).readAll()
+    return json.decode(data)
+end
+
+function reportWrite(id)
+    local url = SERVER .. "/report/write?id="..id
+    http.post(url)
+end
+
+function reportRead(id, data)
+    local url = SERVER .. "/report/read?id=" .. id
+    http.post(
+        url,
+        json.encode({ data = data }),
+        { ["Content-Type"] = "application/json"}
+    )
+end
+

@@ -1,0 +1,16 @@
+function split(byte)
+    local nibble_a = 0
+    for i = 1, 4, 1 do
+        nibble_a = nibble_a + bit.band(2 ^ (i - 1), byte)
+    end
+    
+    local nibble_b = 0
+    for i = 5, 8, 1 do
+        nibble_b = nibble_b + (bit.band(2 ^ (i - 1), byte) / 16)
+    end
+    return nibble_a, nibble_b
+end
+
+function combine(nibble_a, nibble_b)
+    return nibble_a + (nibble_b * 16)
+end

@@ -1,0 +1,19 @@
+os.loadAPI("/apis/nibbles")
+
+local BLOCKSIZE = 32
+
+local STORE = {}
+function read()
+    return STORE
+end
+
+function write(data)
+    for index, value in ipairs(data) do
+        STORE[index] = value
+    end
+end
+
+-- Initial Read
+for i = 1, BLOCKSIZE, 1 do
+    STORE[i] = 0
+end

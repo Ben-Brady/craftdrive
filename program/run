@@ -1,0 +1,35 @@
+os.loadAPI("apis/storeAPI")
+os.loadAPI("apis/tasksAPI")
+os.loadAPI("apis/json")
+
+function test()
+    local in_data = { 146, 6, 252, 121, 194, 176, 88, 77, 38, 203, 250, 228, 2, 193, 146, 196, 115, 218, 8, 9, 223, 24, 30, 106, 45, 21, 165, 12, 221, 121, 139, 250}
+    storeAPI.write(in_data)
+
+    local out_data = storeAPI.read()
+
+    for x = 0, 7, 1 do
+        local line = ""
+        for y = 1, 4, 1 do
+            line = line .. tostring(out_data[(x * 4) + y]) .. " "
+        end
+        print(line)
+    end
+end
+
+while true do
+    local tasks = tasksAPI.getTasks()
+
+    for _, task in ipairs(tasks) do
+        if task.command == "write" then
+            print("Write ID: " .. tostring(task.id))
+            storeAPI.write(task.data)
+            tasksAPI.reportWrite(task.id)
+        else
+            print("Read ID: " .. tostring(task.id))
+            local data = storeAPI.read()
+            tasksAPI.reportRead(task.id, data)
+        end
+    end
+    os.sleep(0.001)
+end

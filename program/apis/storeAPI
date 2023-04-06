@@ -1,0 +1,62 @@
+os.loadAPI("/apis/nibbles")
+
+local BLOCKSIZE = 32
+
+local CACHE = {}
+local BLOCK_LOOKUP = {}
+
+for i = 1, 16, 1 do
+    turtle.select(i)
+    turtle.place()
+    local _, block = turtle.inspect()
+    BLOCK_LOOKUP[block.state.color] = i
+    turtle.dig()
+end
+
+function read()
+    local function readBlock(block)
+        return BLOCK_LOOKUP[block.state.color] or 0
+    end
+
+    local data = {}
+    for i = 1, BLOCKSIZE, 1 do
+        local _, block = turtle.inspectUp()
+        local nibble_a = readBlock(block)
+
+        local _, block = turtle.inspectDown()
+        local nibble_b = readBlock(block)
+
+        data[i] = nibbles.combine(nibble_a, nibble_b)
+        turtle.forward()
+    end
+
+    for _ = 1, BLOCKSIZE, 1 do
+        turtle.back()
+    end
+    
+    return data
+end
+
+function write(data)
+    if #data > BLOCKSIZE then
+        error("Data is too large to fit in a single block")
+    end
+
+    for _, value in ipairs(data) do
+        local nibble_a, nibble_b = nibbles.split(value)
+        
+        turtle.select(nibble_a + 1)
+        turtle.digUp()
+        turtle.placeUp()
+    
+        turtle.select(nibble_b + 1)
+        turtle.digDown()
+        turtle.placeDown()
+    
+        turtle.forward()
+    end
+
+    for _ = 1, #data, 1 do
+        turtle.back()
+    end
+end
